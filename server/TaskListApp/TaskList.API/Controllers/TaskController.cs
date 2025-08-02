@@ -62,11 +62,11 @@ public class TaskController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TaskItem>> CreateTask([FromBody] CreateTaskDto createTaskDto)
     {
-        bool created = await _taskService.CreateTaskAsync(createTaskDto);
-        if (!created)
+        var createdTask = await _taskService.CreateTaskAsync(createTaskDto);
+        if (createdTask == null)
             return Conflict("Uma tarefa com esse nome já existe.");
 
-        return CreatedAtAction(nameof(GetAllTasks), null);
+        return CreatedAtAction(nameof(GetTaskById), new { id = createdTask.Id }, createdTask);
     }
 
     /// <summary>
@@ -102,6 +102,28 @@ public class TaskController : ControllerBase
         {
             return NotFound();
         }
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Move uma tarefa para cima ou para baixo na lista de tarefas.
+    /// Retorna uma resposta 400 Bad Request se a direção não for válida.
+    /// Retorna uma resposta 204 No Content se a movimentação for bem-sucedida.
+    /// Se a tarefa não puder ser movida (por exemplo, se já estiver na posição correta), retorna uma resposta 400 Bad Request.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="direction"></param>
+    /// <returns></returns>
+    [HttpPatch("{id}/move")]
+    public async Task<IActionResult> Move(int id, [FromQuery] string direction)
+    {
+        if (direction != "up" && direction != "down")
+            return BadRequest("A direção deve ser 'up' ou 'down'.");
+
+        bool moved = await _taskService.MoveTaskAsync(id, direction);
+        if (!moved)
+            return BadRequest("Não foi possível mover a tarefa.");
+
         return NoContent();
     }
     #endregion

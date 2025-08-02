@@ -12,4 +12,5 @@ public interface ITaskService
     Task<TaskItem> CreateTaskAsync(CreateTaskDto createTaskDto);
     Task<TaskItem?> UpdateTaskAsync(int id, UpdateTaskDto updateTaskDto);
     Task<bool> DeleteTaskAsync(int id);
+    Task<bool> MoveTaskAsync(int id, string direction);
 }

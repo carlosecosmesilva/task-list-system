@@ -16,7 +16,9 @@ namespace TaskList.Infrastructure.Repositories
 
         public async Task<List<TaskItem>> GetAllTasksAsync()
         {
-            return await _dbContext.Set<TaskItem>().ToListAsync();
+            return await _dbContext.Set<TaskItem>()
+                .OrderBy(t => t.DisplayOrder)
+                .ToListAsync();
         }
 
         public async Task<TaskItem?> GetTaskByIdAsync(int id)
@@ -26,7 +28,8 @@ namespace TaskList.Infrastructure.Repositories
 
         public async Task<TaskItem?> GetTaskByNameAsync(string name)
         {
-            return await _dbContext.Set<TaskItem>().FirstOrDefaultAsync(t => t.Name == name);
+            return await _dbContext.Set<TaskItem>()
+                .FirstOrDefaultAsync(t => t.Name == name);
         }
 
         public async Task AddTaskAsync(TaskItem task)
@@ -51,9 +54,17 @@ namespace TaskList.Infrastructure.Repositories
             }
         }
 
+        public async Task<TaskItem?> GetByDisplayOrderAsync(int displayOrder)
+        {
+            return await _dbContext.Set<TaskItem>()
+                .FirstOrDefaultAsync(t => t.DisplayOrder == displayOrder);
+        }
+
         public async Task<int> GetNextDisplayOrderAsync()
         {
-            var maxOrder = await _dbContext.Set<TaskItem>().MaxAsync(t => (int?)t.DisplayOrder);
+            var maxOrder = await _dbContext.Set<TaskItem>()
+                .MaxAsync(t => (int?)t.DisplayOrder);
+
             return (maxOrder ?? 0) + 1;
         }
     }

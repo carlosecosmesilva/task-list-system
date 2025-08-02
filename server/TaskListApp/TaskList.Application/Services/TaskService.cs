@@ -84,5 +84,34 @@ namespace TaskList.Application.Services
             await _taskRepository.DeleteTaskAsync(id);
             return true;
         }
+
+        public async Task<bool> MoveTaskAsync(int id, string direction)
+        {
+            var task = await _taskRepository.GetTaskByIdAsync(id);
+            if (task == null) return false;
+
+            int targetOrder = direction.ToLower() switch
+            {
+                "up" => task.DisplayOrder - 1,
+                "down" => task.DisplayOrder + 1,
+                _ => task.DisplayOrder
+            };
+
+            if (targetOrder == task.DisplayOrder || targetOrder < 1) return false;
+
+            var neighbor = await _taskRepository.GetByDisplayOrderAsync(targetOrder);
+            if (neighbor == null) return false;
+
+            // Swap orders
+            int temp = task.DisplayOrder;
+            task.DisplayOrder = neighbor.DisplayOrder;
+            neighbor.DisplayOrder = temp;
+
+            await _taskRepository.UpdateTaskAsync(task);
+            await _taskRepository.UpdateTaskAsync(neighbor);
+
+            return true;
+        }
+
     }
 }

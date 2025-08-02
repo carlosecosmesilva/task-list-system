@@ -7,10 +7,5 @@ namespace TaskList.Domain.Entities
         public double Cost { get; set; }
         public DateTime DueDate { get; set; }
         public int DisplayOrder { get; set; }
-
-        public static implicit operator bool(TaskItem? v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

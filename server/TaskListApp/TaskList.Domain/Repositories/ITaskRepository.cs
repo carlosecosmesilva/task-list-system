@@ -10,6 +10,7 @@ namespace TaskList.Domain.Repositories
         Task AddTaskAsync(TaskItem task);
         Task UpdateTaskAsync(TaskItem task);
         Task DeleteTaskAsync(int id);
+        Task<TaskItem?> GetByDisplayOrderAsync(int displayOrder);
         Task<int> GetNextDisplayOrderAsync();
     }
 }
