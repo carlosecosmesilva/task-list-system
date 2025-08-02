@@ -1,61 +1,88 @@
+using TaskList.Application.DTOs;
 using TaskList.Domain.Entities;
 using TaskList.Domain.Repositories;
 
-namespace TaskList.Application.Services;
-
-public class TaskService
+namespace TaskList.Application.Services
 {
-    private readonly ITaskRepository _repository;
-
-    public TaskService(ITaskRepository repository)
+    public class TaskService : ITaskService
     {
-        _repository = repository;
-    }
+        private readonly ITaskRepository _taskRepository;
 
-    public async Task<List<TaskItem>> GetAllTasksAsync()
-        => await _repository.GetAllTasksAsync();
-
-    public async Task<TaskItem?> GetTaskByIdAsync(int id)
-        => await _repository.GetTaskByIdAsync(id);
-
-    public async Task<bool> AddTaskAsync(string name, double cost, DateTime dueDate)
-    {
-        if (await _repository.GetTaskByNameAsync(name) != null)
-            return false;
-
-        int order = await _repository.GetNextDisplayOrderAsync();
-        var task = new TaskItem
+        public TaskService(ITaskRepository taskRepository)
         {
-            Name = name,
-            Cost = cost,
-            DueDate = dueDate,
-            DisplayOrder = order
-        };
+            _taskRepository = taskRepository;
+        }
 
-        await _repository.AddTaskAsync(task);
-        return true;
-    }
+        public async Task<List<TaskItem>> GetAllTasksAsync()
+        {
+            return await _taskRepository.GetAllTasksAsync();
+        }
 
-    public async Task<bool> UpdateTaskAsync(int id, string newName, double newCost, DateTime newDueDate)
-    {
-        var task = await _repository.GetTaskByIdAsync(id);
-        if (task == null)
-            return false;
+        public async Task<TaskItem?> GetTaskByIdAsync(int id)
+        {
+            return await _taskRepository.GetTaskByIdAsync(id);
+        }
 
-        if (task.Name != newName && await _repository.GetTaskByNameAsync(newName) != null)
-            return false;
+        public async Task<TaskItem> CreateTaskAsync(CreateTaskDto createTaskDto)
+        {
+            // Verificar se já existe uma tarefa com o mesmo nome
+            var existingTask = await _taskRepository.GetTaskByNameAsync(createTaskDto.Name);
+            if (existingTask != null)
+            {
+                throw new InvalidOperationException($"Uma tarefa com o nome '{createTaskDto.Name}' já existe.");
+            }
 
-        task.Name = newName;
-        task.Cost = newCost;
-        task.DueDate = newDueDate;
+            // Obter próxima ordem de exibição
+            var nextOrder = await _taskRepository.GetNextDisplayOrderAsync();
 
-        await _repository.UpdateTaskAsync(task);
-        return true;
-    }
+            var task = new TaskItem
+            {
+                Name = createTaskDto.Name,
+                Cost = createTaskDto.Cost,
+                DueDate = createTaskDto.DueDate,
+                DisplayOrder = nextOrder
+            };
 
-    public async Task<bool> DeleteTaskAsync(int id)
-    {
-        await _repository.DeleteTaskAsync(id);
-        return true;
+            await _taskRepository.AddTaskAsync(task);
+            return task;
+        }
+
+        public async Task<TaskItem?> UpdateTaskAsync(int id, UpdateTaskDto updateTaskDto)
+        {
+            var existingTask = await _taskRepository.GetTaskByIdAsync(id);
+            if (existingTask == null)
+            {
+                return null;
+            }
+
+            // Verificar se o novo nome já existe (exceto para a tarefa atual)
+            if (existingTask.Name != updateTaskDto.Name)
+            {
+                var taskWithSameName = await _taskRepository.GetTaskByNameAsync(updateTaskDto.Name);
+                if (taskWithSameName != null && taskWithSameName.Id != id)
+                {
+                    throw new InvalidOperationException($"Uma tarefa com o nome '{updateTaskDto.Name}' já existe.");
+                }
+            }
+
+            existingTask.Name = updateTaskDto.Name;
+            existingTask.Cost = updateTaskDto.Cost;
+            existingTask.DueDate = updateTaskDto.DueDate;
+
+            await _taskRepository.UpdateTaskAsync(existingTask);
+            return existingTask;
+        }
+
+        public async Task<bool> DeleteTaskAsync(int id)
+        {
+            var task = await _taskRepository.GetTaskByIdAsync(id);
+            if (task == null)
+            {
+                return false;
+            }
+
+            await _taskRepository.DeleteTaskAsync(id);
+            return true;
+        }
     }
 }
