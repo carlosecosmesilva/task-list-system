@@ -1,1 +1,25 @@
-<router-outlet></router-outlet>
+<div class="app-container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" routerLink="/tasks">
+                📋 {{ title }}
+            </a>
+            <div class="navbar-text" *ngIf="!isProduction">
+                <small class="badge bg-warning text-dark">{{ version }}</small>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <router-outlet></router-outlet>
+    </main>
+
+    <!-- Footer apenas em desenvolvimento -->
+    <footer *ngIf="!isProduction" class="footer mt-auto py-3 bg-light">
+        <div class="container">
+            <span class="text-muted">
+                🔧 Ambiente de Desenvolvimento - API: {{ getApiUrl() }}
+            </span>
+        </div>
+    </footer>
+</div>

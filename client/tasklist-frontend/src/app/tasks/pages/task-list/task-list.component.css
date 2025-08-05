@@ -1,0 +1,17 @@
+.table-warning {
+    background-color: #fff3cd !important;
+}
+
+.text-warning {
+    font-weight: bold;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}

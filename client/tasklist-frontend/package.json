@@ -3,11 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --configuration development",
+    "start:prod": "ng serve --configuration production",
+    "start:test": "ng serve --configuration test",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
+    "build:test": "ng build --configuration test",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:tasklist-frontend": "node dist/tasklist-frontend/server/server.mjs"
+    "test": "ng test"
   },
   "prettier": {
     "overrides": [
@@ -21,19 +24,22 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^20.1.0",
+    "@angular/common": "^20.1.4",
     "@angular/compiler": "^20.1.0",
-    "@angular/core": "^20.1.0",
+    "@angular/core": "^20.1.4",
     "@angular/forms": "^20.1.0",
-    "@angular/platform-browser": "^20.1.0",
+    "@angular/platform-browser": "^20.1.4",
+    "@angular/platform-browser-dynamic": "^20.1.4",
     "@angular/platform-server": "^20.1.0",
-    "@angular/router": "^20.1.0",
+    "@angular/router": "^20.1.4",
     "@angular/ssr": "^20.1.4",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "zone.js": "^0.15.1"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "^20.1.4",
     "@angular/build": "^20.1.4",
     "@angular/cli": "^20.1.4",
     "@angular/compiler-cli": "^20.1.0",
