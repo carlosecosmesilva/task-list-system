@@ -1,23 +1,60 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Lista de Tarefas</h1>
-        <button class="btn btn-primary" routerLink="/tasks/new">
-            ➕ Nova Tarefa
-        </button>
-    </div>
-
-    <div *ngIf="loading" class="text-center">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Carregando...</span>
+        <div>
+            <button class="btn btn-outline-info btn-sm me-2" (click)="debugState()">
+                🐛 Debug
+            </button>
+            <button *ngIf="loading" class="btn btn-outline-warning btn-sm me-2" (click)="forceStopLoading()">
+                🛑 Parar Loading
+            </button>
+            <button class="btn btn-primary" routerLink="/tasks/new">
+                ➕ Nova Tarefa
+            </button>
         </div>
     </div>
 
-    <div *ngIf="!loading && tasks.length === 0" class="alert alert-info">
-        Nenhuma tarefa encontrada. <a routerLink="/tasks/new" class="alert-link">Criar primeira tarefa</a>
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p class="mt-2">Carregando tarefas...</p>
+        <small class="text-muted">Aguardando resposta do servidor...</small>
+        <div class="mt-2">
+            <button class="btn btn-outline-danger btn-sm" (click)="forceStopLoading()">
+                🛑 Cancelar
+            </button>
+        </div>
     </div>
 
-    <div *ngIf="!loading && tasks.length > 0" class="row">
+    <!-- Mensagem de Erro -->
+    <div *ngIf="!loading && errorMessage" class="alert alert-danger alert-dismissible fade show">
+        <strong>Erro:</strong> {{ errorMessage }}
+        <div class="mt-2">
+            <button type="button" class="btn btn-outline-danger btn-sm me-2" (click)="retry()">
+                🔄 Tentar Novamente
+            </button>
+            <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+        </div>
+    </div>
+
+    <!-- Lista Vazia (sem erro) -->
+    <div *ngIf="!loading && !errorMessage && tasks.length === 0" class="alert alert-info">
+        <h5 class="alert-heading">Nenhuma tarefa encontrada</h5>
+        <p>Você ainda não tem tarefas cadastradas.</p>
+        <hr>
+        <a routerLink="/tasks/new" class="btn btn-primary">
+            ➕ Criar primeira tarefa
+        </a>
+    </div>
+
+    <!-- Tabela de Tarefas -->
+    <div *ngIf="!loading && !errorMessage && tasks.length > 0" class="row">
         <div class="col-12">
+            <div class="alert alert-success">
+                ✅ {{ tasks.length }} tarefa(s) carregada(s) com sucesso!
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-dark">

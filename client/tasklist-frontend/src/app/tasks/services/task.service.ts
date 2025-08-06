@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, timeout } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError, timeout, catchError, tap } from 'rxjs';
 import { Task } from '../models/task.model';
 import { environment } from '../../../environments/environment.test';
 
@@ -13,14 +12,23 @@ export class TaskService {
 
     constructor(private http: HttpClient) {
         if (environment.enableLogging) {
-            console.log('TaskService inicializado com URL:', this.apiUrl);
+            console.log('🚀 TaskService inicializado com URL:', this.apiUrl);
         }
     }
 
     getAll(): Observable<Task[]> {
+        if (environment.enableLogging) {
+            console.log('📡 Fazendo requisição GET para:', this.apiUrl);
+        }
+
         return this.http.get<Task[]>(this.apiUrl)
             .pipe(
-                timeout(environment.apiTimeout),
+                tap(response => {
+                    if (environment.enableLogging) {
+                        console.log('📦 Resposta recebida:', response);
+                    }
+                }),
+                timeout(10000), // 10 segundos timeout
                 catchError(this.handleError)
             );
     }
@@ -35,7 +43,7 @@ export class TaskService {
 
     create(task: Omit<Task, 'id' | 'displayOrder'>): Observable<Task> {
         if (environment.enableLogging) {
-            console.log('Criando tarefa:', task);
+            console.log('📝 Criando tarefa:', task);
         }
 
         return this.http.post<Task>(this.apiUrl, task)
@@ -47,7 +55,7 @@ export class TaskService {
 
     update(id: number, task: Partial<Task>): Observable<Task> {
         if (environment.enableLogging) {
-            console.log('Atualizando tarefa:', id, task);
+            console.log('✏️ Atualizando tarefa:', id, task);
         }
 
         return this.http.put<Task>(`${this.apiUrl}/${id}`, task)
@@ -59,7 +67,7 @@ export class TaskService {
 
     delete(id: number): Observable<void> {
         if (environment.enableLogging) {
-            console.log('Excluindo tarefa:', id);
+            console.log('🗑️ Excluindo tarefa:', id);
         }
 
         return this.http.delete<void>(`${this.apiUrl}/${id}`)
@@ -71,7 +79,7 @@ export class TaskService {
 
     move(id: number, direction: 'up' | 'down'): Observable<void> {
         if (environment.enableLogging) {
-            console.log('Movendo tarefa:', id, direction);
+            console.log('🔄 Movendo tarefa:', id, direction);
         }
 
         return this.http.patch<void>(`${this.apiUrl}/${id}/move?direction=${direction}`, {})
@@ -85,7 +93,7 @@ export class TaskService {
         let errorMessage = 'Erro desconhecido';
 
         if (environment.enableLogging) {
-            console.error('Erro HTTP completo:', error);
+            console.error('🚨 Erro HTTP completo:', error);
         }
 
         if (error.error instanceof ErrorEvent) {
@@ -115,7 +123,7 @@ export class TaskService {
         }
 
         if (environment.enableLogging) {
-            console.error('Erro processado:', errorMessage);
+            console.error('🔍 Erro processado:', errorMessage);
         }
 
         return throwError(() => new Error(errorMessage));
