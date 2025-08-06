@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, timeout, catchError, tap } from 'rxjs';
 import { Task } from '../models/task.model';
-import { environment } from '../../../environments/environment.test';
+import { environment } from '../../../environments/environment'; // MUDAR PARA environment.ts
 
 @Injectable({
     providedIn: 'root'
@@ -28,14 +28,23 @@ export class TaskService {
                         console.log('📦 Resposta recebida:', response);
                     }
                 }),
-                timeout(10000), // 10 segundos timeout
+                timeout(environment.apiTimeout),
                 catchError(this.handleError)
             );
     }
 
     getById(id: number): Observable<Task> {
+        if (environment.enableLogging) {
+            console.log('🔍 Buscando tarefa ID:', id);
+        }
+
         return this.http.get<Task>(`${this.apiUrl}/${id}`)
             .pipe(
+                tap(response => {
+                    if (environment.enableLogging) {
+                        console.log('📦 Tarefa encontrada:', response);
+                    }
+                }),
                 timeout(environment.apiTimeout),
                 catchError(this.handleError)
             );
@@ -53,13 +62,25 @@ export class TaskService {
             );
     }
 
+    // MÉTODO UPDATE CORRIGIDO
     update(id: number, task: Partial<Task>): Observable<Task> {
         if (environment.enableLogging) {
-            console.log('✏️ Atualizando tarefa:', id, task);
+            console.log('✏️ Atualizando tarefa ID:', id, 'Dados:', task);
         }
 
-        return this.http.put<Task>(`${this.apiUrl}/${id}`, task)
+        const updateUrl = `${this.apiUrl}/${id}`;
+
+        if (environment.enableLogging) {
+            console.log('🔗 URL de atualização:', updateUrl);
+        }
+
+        return this.http.put<Task>(updateUrl, task)
             .pipe(
+                tap(response => {
+                    if (environment.enableLogging) {
+                        console.log('✅ Tarefa atualizada com sucesso:', response);
+                    }
+                }),
                 timeout(environment.apiTimeout),
                 catchError(this.handleError)
             );

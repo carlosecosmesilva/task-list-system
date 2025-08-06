@@ -15,7 +15,7 @@ export const routes: Routes = [
         loadComponent: () => import('./tasks/pages/task-form/task-form.component').then(m => m.TaskFormComponent)
     },
     {
-        path: 'tasks/edit/:id',
+        path: 'tasks/edit/:id', // Esta rota deve estar correta
         loadComponent: () => import('./tasks/pages/task-form/task-form.component').then(m => m.TaskFormComponent)
     },
     {

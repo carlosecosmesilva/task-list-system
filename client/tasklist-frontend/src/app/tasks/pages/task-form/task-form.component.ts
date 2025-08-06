@@ -55,19 +55,31 @@ export class TaskFormComponent implements OnInit {
 
     ngOnInit(): void {
         const id = this.route.snapshot.paramMap.get('id');
+        console.log('🔍 ID recebido da rota:', id);
+
         if (id) {
             this.taskId = Number(id);
             this.isEditMode = true;
+            console.log('✏️ Modo de edição ativado para tarefa ID:', this.taskId);
             this.loadTask();
+        } else {
+            console.log('➕ Modo de criação ativado');
         }
     }
 
     loadTask(): void {
-        if (!this.taskId) return;
+        if (!this.taskId) {
+            console.error('❌ ID da tarefa não encontrado');
+            return;
+        }
 
+        console.log('📡 Carregando dados da tarefa ID:', this.taskId);
         this.loading = true;
+        this.errorMessage = '';
+
         this.taskService.getById(this.taskId).subscribe({
             next: (task) => {
+                console.log('✅ Dados da tarefa carregados:', task);
                 this.taskForm.patchValue({
                     name: task.name,
                     cost: task.cost,
@@ -76,9 +88,11 @@ export class TaskFormComponent implements OnInit {
                 this.loading = false;
             },
             error: (error) => {
+                console.error('❌ Erro ao carregar tarefa:', error);
                 this.errorMessage = error.message;
                 this.loading = false;
-                setTimeout(() => this.router.navigate(['/tasks']), 2000);
+                // Redirecionar após 3 segundos
+                setTimeout(() => this.router.navigate(['/tasks']), 3000);
             }
         });
     }
@@ -89,6 +103,7 @@ export class TaskFormComponent implements OnInit {
             this.errorMessage = '';
 
             const formValue = this.taskForm.value;
+            console.log('📝 Dados do formulário:', formValue);
 
             const taskData = {
                 name: formValue.name,
@@ -96,32 +111,48 @@ export class TaskFormComponent implements OnInit {
                 dueDate: new Date(formValue.dueDate).toISOString()
             };
 
+            console.log('📦 Dados processados para envio:', taskData);
+
             if (this.isEditMode && this.taskId) {
+                console.log('✏️ Atualizando tarefa ID:', this.taskId);
                 this.taskService.update(this.taskId, taskData as UpdateTaskDto).subscribe({
-                    next: () => this.router.navigate(['/tasks']),
+                    next: (result) => {
+                        console.log('✅ Tarefa atualizada com sucesso:', result);
+                        this.router.navigate(['/tasks']);
+                    },
                     error: (error) => {
+                        console.error('❌ Erro ao atualizar tarefa:', error);
                         this.errorMessage = error.message;
                         this.loading = false;
                     }
                 });
             } else {
+                console.log('➕ Criando nova tarefa');
                 this.taskService.create(taskData as CreateTaskDto).subscribe({
-                    next: () => this.router.navigate(['/tasks']),
+                    next: (result) => {
+                        console.log('✅ Tarefa criada com sucesso:', result);
+                        this.router.navigate(['/tasks']);
+                    },
                     error: (error) => {
+                        console.error('❌ Erro ao criar tarefa:', error);
                         this.errorMessage = error.message;
                         this.loading = false;
                     }
                 });
             }
+        } else {
+            console.error('❌ Formulário inválido:', this.taskForm.errors);
         }
     }
 
     onCancel(): void {
+        console.log('❌ Cancelando operação');
         this.router.navigate(['/tasks']);
     }
 
     private formatDateForInput(dateString: string): string {
         const date = new Date(dateString);
+        // Formato para input datetime-local: YYYY-MM-DDTHH:MM
         return date.toISOString().slice(0, 16);
     }
 
