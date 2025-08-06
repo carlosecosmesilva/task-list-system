@@ -21,11 +21,16 @@ builder.Services.AddCors(options =>
     {
         if (builder.Environment.IsDevelopment())
         {
-            // Desenvolvimento: permite Angular local
-            policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
+            // Desenvolvimento: permite Angular local em HTTP e HTTPS
+            policy.WithOrigins(
+                "http://localhost:4200",
+                "https://localhost:4200",
+                "http://localhost:5039",
+                "https://localhost:5039"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
         }
         else
         {

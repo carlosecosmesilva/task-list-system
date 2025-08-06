@@ -1,7 +1,7 @@
 export const environment = {
     production: false,
-    apiUrl: 'https://localhost:5039/api',
-    apiTimeout: 5000, // 5 segundos para testes
+    apiUrl: 'http://localhost:5039/api', // Mudança: HTTPS para HTTP
+    apiTimeout: 5000,
     enableLogging: true,
     appName: 'Lista de Tarefas - Teste'
 };
