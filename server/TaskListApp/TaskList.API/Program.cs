@@ -6,29 +6,69 @@ using TaskList.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add repositories
+// Adiciona os repositórios e serviços
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
-// Add DbContext
+// Adiciona o DbContext com PostgreSQL
 builder.Services.AddDbContext<TaskDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure Swagger
-builder.Services.AddSwaggerGen(c =>
+// Configuração de CORS dinâmica baseada no ambiente
+builder.Services.AddCors(options =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "TaskList API", Version = "v1" });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            // Desenvolvimento: permite Angular local
+            policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else
+        {
+            // Produção: configure com sua URL de produção
+            policy.WithOrigins("https://your-production-domain.com")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+    });
 });
 
-// Add controllers
+// Configura o Swagger apenas em desenvolvimento
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "TaskList API", Version = "v1" });
+    });
+}
+
+// Adiciona os serviços ao contêiner
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-app.UseSwagger();
-app.UseSwaggerUI();
-app.UseHttpsRedirection();
+
+// Configurado o pipeline de requisições HTTP
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// Usa CORS antes do Authorization
+app.UseCors("AllowFrontend");
+
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
