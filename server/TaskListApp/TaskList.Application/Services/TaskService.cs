@@ -76,10 +76,7 @@ namespace TaskList.Application.Services
         public async Task<bool> DeleteTaskAsync(int id)
         {
             var task = await _taskRepository.GetTaskByIdAsync(id);
-            if (task == null)
-            {
-                return false;
-            }
+            if (task == null) return false;
 
             await _taskRepository.DeleteTaskAsync(id);
             return true;
@@ -102,16 +99,10 @@ namespace TaskList.Application.Services
             var neighbor = await _taskRepository.GetByDisplayOrderAsync(targetOrder);
             if (neighbor == null) return false;
 
-            // Swap orders
-            int temp = task.DisplayOrder;
-            task.DisplayOrder = neighbor.DisplayOrder;
-            neighbor.DisplayOrder = temp;
-
-            await _taskRepository.UpdateTaskAsync(task);
-            await _taskRepository.UpdateTaskAsync(neighbor);
+            // Solução: Utilização de valor temporário para evitar conflito de índice único
+            await _taskRepository.SwapTaskOrdersAsync(task, neighbor);
 
             return true;
         }
-
     }
 }
