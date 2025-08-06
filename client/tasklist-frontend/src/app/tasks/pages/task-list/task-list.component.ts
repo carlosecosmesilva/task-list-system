@@ -5,12 +5,29 @@ import { TaskService } from '../../services/task.service';
 import { Task } from '../../models/task.model';
 import { Subscription } from 'rxjs';
 
+// Material Imports (sem MatChipsModule)
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 @Component({
     selector: 'app-task-list',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [
+        CommonModule,
+        RouterModule,
+        MatButtonModule,
+        MatIconModule,
+        MatTableModule,
+        MatProgressSpinnerModule,
+        MatCardModule,
+        MatTooltipModule
+    ],
     templateUrl: './task-list.component.html',
-    styleUrls: ['./task-list.component.css']
+    styleUrls: ['./task-list.component.scss']
 })
 export class TaskListComponent implements OnInit, OnDestroy {
     tasks: Task[] = [];
@@ -18,9 +35,12 @@ export class TaskListComponent implements OnInit, OnDestroy {
     errorMessage = '';
     private subscription: Subscription = new Subscription();
 
+    // Colunas da tabela utilizando Material
+    displayedColumns: string[] = ['name', 'cost', 'dueDate', 'order', 'actions'];
+
     constructor(
         private taskService: TaskService,
-        private cdr: ChangeDetectorRef // Adicionar ChangeDetectorRef
+        private cdr: ChangeDetectorRef
     ) { }
 
     ngOnInit(): void {
@@ -32,18 +52,13 @@ export class TaskListComponent implements OnInit, OnDestroy {
     }
 
     loadTasks(): void {
-        // Limpar estado anterior
         this.loading = true;
         this.errorMessage = '';
         this.tasks = [];
 
         console.log('🔄 Iniciando carregamento de tarefas...');
-        console.log('🔄 Loading estado:', this.loading);
-
-        // Forçar detecção de mudanças
         this.cdr.detectChanges();
 
-        // Timeout de segurança
         const timeoutId = setTimeout(() => {
             if (this.loading) {
                 console.log('⏰ Timeout atingido, forçando parada do loading');
@@ -57,29 +72,16 @@ export class TaskListComponent implements OnInit, OnDestroy {
             next: (tasks) => {
                 clearTimeout(timeoutId);
                 console.log('✅ Tarefas recebidas:', tasks);
-                console.log('🔄 Parando loading...');
-
                 this.tasks = tasks || [];
-                this.loading = false; // PARAR LOADING
-
-                console.log('🔄 Loading após parar:', this.loading);
-                console.log('📊 Total de tarefas:', this.tasks.length);
-
-                // Forçar detecção de mudanças
+                this.loading = false;
                 this.cdr.detectChanges();
             },
             error: (error) => {
                 clearTimeout(timeoutId);
                 console.error('❌ Erro ao carregar tarefas:', error);
-                console.log('🔄 Parando loading devido a erro...');
-
                 this.errorMessage = error.message || 'Erro ao carregar tarefas';
-                this.loading = false; // PARAR LOADING
+                this.loading = false;
                 this.tasks = [];
-
-                console.log('🔄 Loading após erro:', this.loading);
-
-                // Forçar detecção de mudanças
                 this.cdr.detectChanges();
             }
         });
@@ -126,7 +128,6 @@ export class TaskListComponent implements OnInit, OnDestroy {
         this.loadTasks();
     }
 
-    // Método de debug melhorado
     debugState(): void {
         console.log('🐛 Estado atual:', {
             loading: this.loading,
@@ -135,7 +136,6 @@ export class TaskListComponent implements OnInit, OnDestroy {
             tasks: this.tasks
         });
 
-        // Forçar parada do loading se estiver travado
         if (this.loading && this.tasks.length > 0) {
             console.log('🔧 Forçando parada do loading (debug)');
             this.loading = false;
@@ -143,7 +143,6 @@ export class TaskListComponent implements OnInit, OnDestroy {
         }
     }
 
-    // Método para forçar parada do loading
     forceStopLoading(): void {
         console.log('🛑 Forçando parada do loading');
         this.loading = false;

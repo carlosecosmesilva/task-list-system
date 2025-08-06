@@ -1,25 +1,27 @@
 <div class="app-container">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" routerLink="/tasks">
-                📋 {{ title }}
-            </a>
-            <div class="navbar-text" *ngIf="!isProduction">
-                <small class="badge bg-warning text-dark">{{ version }}</small>
-            </div>
-        </div>
-    </nav>
+    <!-- Material Toolbar -->
+    <mat-toolbar color="primary">
+        <button mat-icon-button routerLink="/tasks">
+            <mat-icon>task_alt</mat-icon>
+        </button>
+        <span class="toolbar-title">{{ title }}</span>
+        <span class="spacer"></span>
+        <mat-chip *ngIf="!isProduction" color="warn" selected>
+            <mat-icon matChipAvatar>code</mat-icon>
+            {{ version }}
+        </mat-chip>
+    </mat-toolbar>
 
-    <main>
+    <!-- Main Content -->
+    <main class="main-content">
         <router-outlet></router-outlet>
     </main>
 
-    <!-- Footer apenas em desenvolvimento -->
-    <footer *ngIf="!isProduction" class="footer mt-auto py-3 bg-light">
-        <div class="container">
-            <span class="text-muted">
-                🔧 Ambiente de Desenvolvimento - API: {{ getApiUrl() }}
-            </span>
-        </div>
+    <!-- Footer para desenvolvimento -->
+    <footer *ngIf="!isProduction" class="footer">
+        <mat-toolbar color="accent">
+            <mat-icon>settings</mat-icon>
+            <span class="ms-2">Ambiente de Desenvolvimento - API: {{ getApiUrl() }}</span>
+        </mat-toolbar>
     </footer>
 </div>

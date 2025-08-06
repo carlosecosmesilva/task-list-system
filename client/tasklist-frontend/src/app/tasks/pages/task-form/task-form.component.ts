@@ -5,10 +5,31 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TaskService } from '../../services/task.service';
 import { Task, CreateTaskDto, UpdateTaskDto } from '../../models/task.model';
 
+// Material Imports
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 @Component({
     selector: 'app-task-form',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatCardModule,
+        MatButtonModule,
+        MatIconModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatProgressSpinnerModule,
+        MatDatepickerModule,
+        MatNativeDateModule
+    ],
     templateUrl: './task-form.component.html',
     styleUrls: ['./task-form.component.css']
 })
@@ -69,7 +90,6 @@ export class TaskFormComponent implements OnInit {
 
             const formValue = this.taskForm.value;
 
-            // Converter data para ISO string
             const taskData = {
                 name: formValue.name,
                 cost: Number(formValue.cost),
@@ -102,7 +122,7 @@ export class TaskFormComponent implements OnInit {
 
     private formatDateForInput(dateString: string): string {
         const date = new Date(dateString);
-        return date.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
+        return date.toISOString().slice(0, 16);
     }
 
     get name() { return this.taskForm.get('name'); }

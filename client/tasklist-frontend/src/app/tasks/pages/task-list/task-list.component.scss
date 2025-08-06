@@ -1,0 +1,88 @@
+/* Cost Badge (substitui mat-chip) */
+.cost-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 16px;
+    background-color: #e3f2fd;
+    color: #1976d2;
+    font-size: 0.875rem;
+    font-weight: 500;
+    gap: 4px;
+
+    &.high-cost {
+        background-color: #ffebee;
+        color: #d32f2f;
+    }
+
+    .cost-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* Order Badge (substitui mat-chip) */
+.order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 12px;
+    background-color: #9c27b0;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Order Controls */
+.order-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* High Cost Row */
+.high-cost-row {
+    background-color: #fff3e0;
+}
+
+/* High Cost Name */
+.high-cost-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Error Card */
+.error-card {
+    border-left: 4px solid #f44336;
+}
+
+/* Empty State */
+.empty-state-card {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .order-controls {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
