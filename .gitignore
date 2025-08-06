@@ -51,7 +51,6 @@ artifacts/
 *.snupkg
 packages/
 .nuget/
-**/Properties/launchSettings.json
 
 # Test Results
 [Tt]est[Rr]esult*/
@@ -67,7 +66,7 @@ ScaffoldingReadMe.txt
 # Entity Framework
 *.edmx.diagram
 *.edmx.sql
-migrations/
+# Remover esta linha para manter as migrations: migrations/
 
 # =============================================================================
 # ANGULAR FRONTEND
@@ -82,10 +81,10 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 # Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+dist/
+tmp/
+out-tsc/
+bazel-out/
 build/
 
 # Runtime data
@@ -99,13 +98,13 @@ coverage/
 *.lcov
 .nyc_output
 
-# Angular
-/.angular/cache
+# Angular specific
+.angular/
 .sass-cache/
-/connect.lock
-/libpeerconnection.log
+connect.lock
+libpeerconnection.log
 testem.log
-/typings
+typings/
 
 # TypeScript
 *.tsbuildinfo
@@ -119,6 +118,9 @@ testem.log
 # Storybook build outputs
 .out
 .storybook-out
+
+# Angular SSR
+.angular/cache/
 
 # =============================================================================
 # DATABASE & ENVIRONMENT
@@ -140,7 +142,7 @@ testem.log
 .env.test
 !.env.example
 
-# Application settings
+# Application settings - AJUSTADO para manter apenas appsettings.json
 appsettings.Development.json
 appsettings.Local.json
 appsettings.Production.json
@@ -220,10 +222,6 @@ lerna-debug.log*
 # =============================================================================
 # DOCUMENTATION & MISC
 # =============================================================================
-
-# Documentation builds (optional - remove if you want to track generated docs)
-# docs/build/
-# docs/_build/
 
 # Cache directories
 .cache/
