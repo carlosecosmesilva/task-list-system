@@ -26,10 +26,10 @@ builder.Services.AddDbContext<TaskDbContext>(options =>
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 
-// Configurar CORS
+// Configurar CORS - ADICIONAR ANTES DE builder.Build()
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         policy.AllowAnyOrigin()
               .AllowAnyHeader()
@@ -39,6 +39,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// ADICIONAR LOGO APÓS app = builder.Build()
+app.UseCors("AllowFrontend");
+
 // Configure pipeline
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
@@ -46,7 +49,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 

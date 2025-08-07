@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, timeout, catchError, tap } from 'rxjs';
 import { Task } from '../models/task.model';
-import { environment } from '../../../environments/environment'; // MUDAR PARA environment.ts
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class TaskService {
-    private apiUrl = `${environment.apiUrl}/task`;
+    private apiUrl = `${environment.apiUrl}/tasks`; // CORRIGIDO: task → tasks
 
     constructor(private http: HttpClient) {
         if (environment.enableLogging) {
