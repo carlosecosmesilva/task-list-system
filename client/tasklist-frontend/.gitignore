@@ -1,0 +1,7 @@
+.vercel
+node_modules
+.angular/cache
+dist
+*.log
+coverage
+e2e/reports

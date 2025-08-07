@@ -1,0 +1,10 @@
+node_modules
+.angular/cache
+dist
+.git
+*.log
+coverage
+e2e/reports
+*.zip
+*.tar.gz
+.vercel
