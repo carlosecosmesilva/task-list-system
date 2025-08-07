@@ -6,74 +6,82 @@ using TaskList.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona os repositórios e serviços
+// Configurar porta do Railway
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+// Services
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    // Fallback para variável de ambiente do Railway
+    connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+}
+
+// Converter formato Railway para EF Core se necessário
+if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgresql://"))
+{
+    connectionString = ConvertPostgresUrlToConnectionString(connectionString);
+}
+
+builder.Services.AddDbContext<TaskDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// DI
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 
-// Adiciona o DbContext com PostgreSQL
-builder.Services.AddDbContext<TaskDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Configuração de CORS dinâmica baseada no ambiente
+// CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        if (builder.Environment.IsDevelopment())
-        {
-            // Desenvolvimento: permite Angular local em HTTP e HTTPS
-            policy.WithOrigins(
-                "http://localhost:4200",
-                "https://localhost:4200",
-                "http://localhost:5039",
-                "https://localhost:5039"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-        }
-        else
-        {
-            // Produção: configure com sua URL de produção
-            policy.WithOrigins("https://your-production-domain.com")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        }
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
-// Configura o Swagger apenas em desenvolvimento
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddSwaggerGen(c =>
-    {
-        c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "TaskList API", Version = "v1" });
-    });
-}
-
-// Adiciona os serviços ao contêiner
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-
 var app = builder.Build();
 
-// Configurado o pipeline de requisições HTTP
-if (app.Environment.IsDevelopment())
+// Configure pipeline
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
-// Usa CORS antes do Authorization
-app.UseCors("AllowFrontend");
-
+app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
+// Auto-migrate no Railway
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<TaskDbContext>();
+    try
+    {
+        context.Database.Migrate();
+        Console.WriteLine("✅ Database migrated successfully");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Database migration failed: {ex.Message}");
+    }
+}
+
 app.Run();
+
+// Helper para converter URL do PostgreSQL
+static string ConvertPostgresUrlToConnectionString(string postgresUrl)
+{
+    var uri = new Uri(postgresUrl);
+    var userInfo = uri.UserInfo.Split(':');
+
+    return $"Host={uri.Host};Port={uri.Port};Database={uri.LocalPath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+}

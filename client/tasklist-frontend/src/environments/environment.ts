@@ -1,8 +1,7 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:5039/api',
-  apiTimeout: 10000, // Reduzi para 10 segundos
-  enableLogging: true,
-  version: '1.0.0-dev',
+  production: true,
+  apiUrl: 'https://your-backend-app.railway.app/api', // Será atualizado após deploy do backend
+  apiTimeout: 30000,
+  enableLogging: false,
   appName: 'Lista de Tarefas - Desenvolvimento'
 };

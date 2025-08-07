@@ -1,0 +1,24 @@
+services:
+    - type: web
+      name: task-list-backend
+      env: docker
+      dockerfilePath: ./server/TaskListApp/Dockerfile
+      dockerContext: ./server/TaskListApp
+      envVars:
+          - key: ASPNETCORE_ENVIRONMENT
+            value: Production
+          - key: DATABASE_URL
+            fromDatabase:
+                name: task-list-db
+                property: connectionString
+
+    - type: web
+      name: task-list-frontend
+      env: static
+      buildCommand: cd client/tasklist-frontend && npm ci && npm run build
+      staticPublishPath: ./client/tasklist-frontend/dist/tasklist-frontend
+
+databases:
+    - name: task-list-db
+      databaseName: TaskListDB
+      user: tasklistuser
