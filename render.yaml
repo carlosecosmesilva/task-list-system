@@ -20,5 +20,5 @@ services:
 
 databases:
     - name: task-list-db
-      databaseName: TaskListDB
+      databaseName: tasklistdb
       user: tasklistuser
