@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
     providedIn: 'root'
 })
 export class TaskService {
-    private apiUrl = `${environment.apiUrl}/tasks`; // CORRIGIDO: task → tasks
+    private apiUrl = `${environment.apiUrl}/task`; // CORRIGIDO: tasks → task
 
     constructor(private http: HttpClient) {
         if (environment.enableLogging) {
