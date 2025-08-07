@@ -6,6 +6,14 @@ A fullstack project with **.NET 8 backend** and **PostgreSQL database**, allowin
 
 ---
 
+## 🌐 **Links de Produção / Production Links**
+
+-   **🖥️ Aplicação Web / Web App:** https://tasklist-frontend-lovat.vercel.app/tasks
+-   **📚 API Documentation (Swagger):** https://task-list-system.onrender.com/swagger/index.html
+-   **🔗 Repositório GitHub / GitHub Repository:** https://github.com/carlosecosmesilva/task-list-system
+
+---
+
 ## 📌 Funcionalidades / Features
 
 -   📋 **Listar tarefas** com ordenação personalizada  
@@ -32,13 +40,22 @@ A fullstack project with **.NET 8 backend** and **PostgreSQL database**, allowin
 
 ```bash
 task-list-system/
-├── client/                      # Frontend Angular / Angular frontend
+├── client/tasklist-frontend/    # Frontend Angular / Angular frontend
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── tasks/          # Módulo de tarefas / Tasks module
+│   │   │   ├── shared/         # Componentes compartilhados / Shared components
+│   │   │   └── core/           # Serviços core / Core services
+│   │   └── environments/       # Configurações de ambiente / Environment configs
+│   ├── angular.json
+│   └── package.json
 ├── server/TaskListApp/
-│   ├── TaskList.API/           # Web API (Controllers)
-│   ├── TaskList.Application/   # Regras de negócio / Business logic
-│   ├── TaskList.Domain/        # Entidades e interfaces / Entities & interfaces
+│   ├── TaskList.API/          # Web API (Controllers)
+│   ├── TaskList.Application/  # Regras de negócio / Business logic
+│   ├── TaskList.Domain/       # Entidades e interfaces / Entities & interfaces
 │   ├── TaskList.Infrastructure/ # Acesso a dados / Data access (EF Core)
-│   └── docker-compose.yml     # Container PostgreSQL
+│   ├── Dockerfile             # Container para deploy / Deploy container
+│   └── docker-compose.yml     # Container PostgreSQL local / Local PostgreSQL
 ├── .gitignore
 └── README.md
 ```
@@ -47,26 +64,35 @@ task-list-system/
 
 ## 🚀 Tecnologias / Technologies
 
-### Backend
+### Frontend ✅
+
+-   **Angular 18** - Framework frontend
+-   **Angular Material** - Componentes UI / UI Components
+-   **TypeScript** - Linguagem / Language
+-   **SCSS** - Estilização / Styling
+-   **RxJS** - Programação reativa / Reactive programming
+
+### Backend ✅
 
 -   **.NET 8** Web API
 -   **Entity Framework Core 9.0** - ORM
 -   **PostgreSQL 16** - Banco de dados / Database
 -   **Npgsql** - Provider PostgreSQL para .NET
--   **Docker Compose** - Containerização / Containerization
+-   **Docker** - Containerização / Containerization
 -   **Swagger/OpenAPI** - Documentação da API / API documentation
 
-### Frontend (Planejado / Planned)
+### Deploy / Hosting ✅
 
--   **Angular** - Framework frontend
--   **TypeScript** - Linguagem / Language
--   **Bootstrap** - Estilização / Styling
+-   **Frontend:** [Vercel](https://vercel.com) - Deploy automático / Automated deployment
+-   **Backend:** [Render](https://render.com) - Container deployment
+-   **Database:** Render PostgreSQL - 500MB gratuito / 500MB free tier
 
 ### Arquitetura / Architecture
 
 -   **Clean Architecture** (simplificada / simplified)
 -   **Repository Pattern**
 -   **Dependency Injection**
+-   **CORS** configurado para produção / CORS configured for production
 
 ---
 
@@ -82,11 +108,45 @@ task-list-system/
 
 ---
 
-## 🐳 Como Executar / How to Run
+## 🌍 **Configuração de Ambiente / Environment Setup**
+
+### **Produção / Production**
+
+```typescript
+// environment.prod.ts
+export const environment = {
+	production: true,
+	apiUrl: "https://task-list-system.onrender.com/api",
+	apiTimeout: 10000,
+	enableLogging: false,
+	appName: "Task List System",
+	version: "1.0.0",
+};
+```
+
+### **Desenvolvimento / Development**
+
+```typescript
+// environment.development.ts
+export const environment = {
+	production: false,
+	apiUrl: "http://localhost:5000/api",
+	apiTimeout: 30000,
+	enableLogging: true,
+	appName: "Task List System - Dev",
+	version: "1.0.0",
+};
+```
+
+---
+
+## 🐳 Como Executar Localmente / How to Run Locally
 
 ### Pré-requisitos / Prerequisites
 
 -   **.NET 8 SDK**
+-   **Node.js 18+**
+-   **Angular CLI**
 -   **Docker & Docker Compose**
 -   **PostgreSQL** (opcional se usar Docker / optional if using Docker)
 
@@ -97,41 +157,97 @@ git clone https://github.com/carlosecosmesilva/task-list-system.git
 cd task-list-system
 ```
 
-### 2. Subir o banco PostgreSQL / Start PostgreSQL database
+### 2. Backend Setup
 
 ```bash
 cd server/TaskListApp
+
+# Subir o banco PostgreSQL / Start PostgreSQL database
 docker compose up -d
-```
 
-### 3. Restaurar pacotes / Restore packages
-
-```bash
+# Restaurar pacotes / Restore packages
 dotnet restore
-```
 
-### 4. Aplicar migrations / Apply migrations
-
-```bash
+# Aplicar migrations / Apply migrations
 dotnet ef database update -p TaskList.Infrastructure -s TaskList.API
-```
 
-### 5. Executar a API / Run API
-
-```bash
+# Executar a API / Run API
 dotnet run --project TaskList.API
 ```
 
-### 6. Acessar a aplicação / Access application
+### 3. Frontend Setup
 
-**API estará disponível em / API will be available at:**
+```bash
+cd client/tasklist-frontend
+
+# Instalar dependências / Install dependencies
+npm install
+
+# Executar em modo de desenvolvimento / Run in development mode
+ng serve
+
+# Acessar: http://localhost:4200
+```
+
+### 4. Acessar aplicações / Access applications
+
+**API Backend:**
 
 -   `https://localhost:5001`
 -   `http://localhost:5000`
+-   **Swagger:** `https://localhost:5001/swagger`
 
-**Documentação Swagger / Swagger Documentation:**
+**Frontend:**
 
--   `https://localhost:5001/swagger`
+-   `http://localhost:4200`
+
+---
+
+## 🚀 **Deploy em Produção / Production Deployment**
+
+### **Frontend (Vercel)**
+
+```bash
+cd client/tasklist-frontend
+
+# Instalar Vercel CLI / Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel --prod
+```
+
+**Configurações automáticas / Auto configurations:**
+
+-   ✅ Build command: `npm run build`
+-   ✅ Output directory: `dist/tasklist-frontend`
+-   ✅ HTTPS automático / Auto HTTPS
+-   ✅ CDN global / Global CDN
+
+### **Backend (Render)**
+
+**Via GitHub Integration:**
+
+1. Conectar repositório no [Render](https://render.com)
+2. Criar **Web Service**
+3. Configurações:
+    - **Root Directory:** `server/TaskListApp`
+    - **Environment:** Docker
+    - **Plan:** Free
+
+**Variáveis de ambiente / Environment variables:**
+
+```bash
+ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_URLS=http://0.0.0.0:10000
+ConnectionStrings__DefaultConnection=postgresql://user:pass@host:port/db
+```
+
+### **Database (Render PostgreSQL)**
+
+1. Criar **PostgreSQL** no Render
+2. Copiar **Internal Database URL**
+3. Configurar no Web Service
 
 ---
 
@@ -139,12 +255,36 @@ dotnet run --project TaskList.API
 
 ### Tarefas / Tasks
 
--   `GET /api/tasks` - Listar todas / List all tasks
--   `GET /api/tasks/{id}` - Buscar por ID / Get by ID
--   `POST /api/tasks` - Criar nova / Create new task
--   `PUT /api/tasks/{id}` - Atualizar / Update task
--   `DELETE /api/tasks/{id}` - Excluir / Delete task
--   `PATCH /api/tasks/{id}/reorder` - Reordenar / Reorder task
+| Método | Endpoint         | Descrição / Description       |
+| ------ | ---------------- | ----------------------------- |
+| GET    | `/api/task`      | Listar todas / List all tasks |
+| GET    | `/api/task/{id}` | Buscar por ID / Get by ID     |
+| POST   | `/api/task`      | Criar nova / Create new task  |
+| PUT    | `/api/task/{id}` | Atualizar / Update task       |
+| DELETE | `/api/task/{id}` | Excluir / Delete task         |
+
+**📚 Documentação completa / Full documentation:**  
+https://task-list-system.onrender.com/swagger/index.html
+
+---
+
+## 🧪 **Testar a Aplicação / Test the Application**
+
+### **Testar API em Produção / Test Production API**
+
+```bash
+# Listar tarefas / List tasks
+curl https://task-list-system.onrender.com/api/task
+
+# Criar tarefa / Create task
+curl -X POST https://task-list-system.onrender.com/api/task \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Nova Tarefa","description":"Descrição","cost":100}'
+```
+
+### **Testar Frontend**
+
+Acesse: https://tasklist-frontend-lh9avykr5-carlosecosmesilvas-projects.vercel.app/tasks
 
 ---
 
@@ -174,6 +314,23 @@ dotnet run --project TaskList.API
 
 -   ⚠️ **Confirmação** antes de excluir  
     **Confirmation** before deletion
+
+---
+
+## 📈 **Status dos Serviços / Service Status**
+
+-   ✅ **Frontend:** Ativo no Vercel / Active on Vercel
+-   ✅ **Backend:** Ativo no Render / Active on Render
+-   ✅ **Database:** PostgreSQL operacional / PostgreSQL operational
+-   ✅ **CORS:** Configurado corretamente / Properly configured
+-   ✅ **SSL:** HTTPS automático / Auto HTTPS
+
+### **Limitações do Plano Gratuito / Free Tier Limitations**
+
+-   ⏰ **Cold Start:** Primeira requisição ~30 segundos / First request ~30 seconds
+-   💤 **Sleep Mode:** Serviços dormem após 15-30min inatividade / Services sleep after 15-30min inactivity
+-   💾 **Database:** 500MB PostgreSQL gratuito / 500MB free PostgreSQL
+-   🔄 **Deploy:** Automático via Git / Auto deploy via Git
 
 ---
 
@@ -208,23 +365,25 @@ dotnet test
 -   [x] Criar Controllers e endpoints
 -   [x] Configurar Swagger
 -   [x] Implementar validações
+-   [x] Deploy no Render
 
-### Frontend 🚧
+### Frontend ✅
 
--   [ ] Configurar projeto Angular
--   [ ] Criar componentes de lista
--   [ ] Implementar formulários
--   [ ] Adicionar drag-and-drop
--   [ ] Estilizar interface
+-   [x] Configurar projeto Angular
+-   [x] Criar componentes de lista
+-   [x] Implementar formulários
+-   [x] Estilizar interface com Material
+-   [x] Deploy no Vercel
 
 ### Melhorias Futuras / Future Improvements ⭐
 
+-   [ ] Adicionar drag-and-drop para reordenar
 -   [ ] Autenticação de usuários / User authentication
 -   [ ] Testes unitários / Unit tests
 -   [ ] Testes de integração / Integration tests
 -   [ ] Cache e performance / Caching & performance
 -   [ ] Logs estruturados / Structured logging
--   [ ] Deploy automatizado / Automated deployment
+-   [ ] Notificações push / Push notifications
 
 ---
 
@@ -250,6 +409,7 @@ This project is licensed under the **MIT License**.
 **Carlos Eduardo**
 
 -   GitHub: [@carlosecosmesilva](https://github.com/carlosecosmesilva)
+-   Email: [carlos.eduardo.cs@outlook.com](carlos.eduardo.cs@outlook.com)
 
 ---
 
@@ -258,3 +418,8 @@ This project is licensed under the **MIT License**.
 -   Equipe do **.NET** pelo excelente framework
 -   Comunidade **PostgreSQL** pelo banco robusto
 -   Equipe **Angular** pelo framework frontend
+-   **Vercel** e **Render** pelos serviços gratuitos de hospedagem
+
+---
+
+**🎉 Projeto totalmente funcional e em produção! / Fully functional project in production!**
