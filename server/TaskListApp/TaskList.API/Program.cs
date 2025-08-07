@@ -15,19 +15,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Database
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrEmpty(connectionString))
-{
-    // Fallback para variável de ambiente do Railway
-    connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
-}
-
-// Converter formato Railway para EF Core se necessário
-if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgresql://"))
-{
-    connectionString = ConvertPostgresUrlToConnectionString(connectionString);
-}
+// Configurar conexão com banco
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<TaskDbContext>(options =>
     options.UseNpgsql(connectionString));
