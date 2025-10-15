@@ -4,10 +4,6 @@ Este é o frontend do sistema de Lista de Tarefas, desenvolvido em **Angular 18*
 
 This is the frontend for the Task List system, built with **Angular 18** using **standalone components**, consuming a **.NET 8** REST API.
 
----Claro, Carlos! Aqui está um `README.md` para o **projeto Angular (`client/tasklist-frontend`)**, escrito em **português e inglês**, seguindo boas práticas, destacando como rodar, estrutura do projeto, comandos úteis e observações.
-
----
-
 ### 📄 `client/tasklist-frontend/README.md`
 
 ````markdown
@@ -102,21 +98,6 @@ ng generate module tasks --routing
 
 Projeto educacional sem fins comerciais.
 Educational purpose only. No commercial license.
-
----
-
-```
-
----
-
-Se quiser, posso:
-- **Salvar esse arquivo diretamente** no seu projeto
-- **Adaptar para Markdown com formatação visual extra**
-- Ou incluir seções de **build para produção (ng build)**
-
-Deseja que eu gere ou salve esse arquivo para você agora?
-```
-
 
 ## 🚀 Como executar / How to Run
 
